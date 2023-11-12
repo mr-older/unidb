@@ -99,6 +99,10 @@ class Database
 			return false;
 		}
 
+		if(empty($this->status) && $this->connect() == false) {
+			return false;
+		}
+
 		try {
 			$stmt = $this->db_link->prepare($query);
 		}
