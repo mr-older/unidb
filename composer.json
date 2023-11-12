@@ -6,9 +6,9 @@
     "homepage": "https://github.com/mr-older/unidb",
 	"keywords": [
 		"database",
-		"db",
 		"pdo",
-		"broker",
+		"interface",
+		"sql",
 		"php"
 	],
     "require": { "php": "^7.0 || ^8.0" },

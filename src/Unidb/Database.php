@@ -2,18 +2,34 @@
 
 namespace UniDB;
 
+#
+# Usage example 1: no data returned
+#
+# if($this->db->query("INSERT INTO table VALUES (?,?,?)", ['iss', $number, $string, $float]) === false) {
+#   echo "{$this->db->error}\n";
+# }
+# where 'isd' = types of values in (?,?,?), variables passed are $number, $string, $float
+#
+
+#
+# Usage example 2: fetched data is expected in return
+#
+# if(($data = $this->db->query("SELECT * FROM table WHERE id=?", ['i', $my_id], true)) === false) { echo "{$this->db->error}\n"; }
+# var_dump($data)
+#
+
 class Database
 {
 	public $error, $db_link, $status = 0; // 0 = not connected, 1 = connected
 
 	public function __construct($config)
 	{
-		if( empty($config['host']) ||
+		if(	empty($config['host']) ||
 			empty($config['port']) ||
 			empty($config['name']) ||
 			empty($config['user'])
 		) {
-			$this->error = 'No or bad config';
+			$this->error = "No or bad config";
 			return false;
 		}
 
@@ -41,7 +57,7 @@ class Database
 			return true;
 		}
 		catch(\PDOException $e) {
-			$this->error = 'Connection failed: '.$e->getMessage();
+			$this->error = "Connection failed: ".$e->getMessage();
 			return false;
 		}
 	}
@@ -61,13 +77,13 @@ class Database
 			return false;
 		}
 
-		try	{
-			$stmt = $this->db_link->query('SELECT 1');
+		try {
+			$stmt = $this->db_link->query("SELECT 1");
 			return true;
 		}
 		catch(\PDOException $e) {
 			// $stmt->errorCode() may have details also
-			$this->error = 'Request to DB failed on `execute`, disconnected: '.$e->getMessage();
+			$this->error = "Request to DB failed on `execute`, disconnected: ".$e->getMessage();
 			$this->disconnect();
 			return false;
 		}
@@ -79,7 +95,7 @@ class Database
 		$prefix = __FUNCTION__.": $query, ";
 
 		if(empty($this->db_link)) {
-			$this->error = "$prefix Bad or no PDO object given.";
+			$this->error = "$prefix Bad or no PDO object given";
 			return false;
 		}
 
@@ -87,7 +103,7 @@ class Database
 			$stmt = $this->db_link->prepare($query);
 		}
 		catch(\PDOException $e) {
-			$this->error = "$prefix Request to DB failed on `prepare`: ".$e->getMessage();
+			$this->error = "$prefix DB request failed on `prepare`: ".$e->getMessage();
 			return false;
 		}
 
@@ -110,7 +126,7 @@ class Database
 				$prefix.= " $key=>{$value} ";
 
 				if(empty($types[$params_number - 1])) {
-					$this->error = "$prefix Not enough data types for values.";
+					$this->error = "$prefix Not enough data types for values";
 					return false;
 				}
 
@@ -144,11 +160,7 @@ class Database
 			$dataArray = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		}
 
-		if(!empty($dataArray)) {
-			return $dataArray;
-		}
-
-		return true;
+		return (empty($dataArray) ? true : $dataArray);
 	}
 }
 
