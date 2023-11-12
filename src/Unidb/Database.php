@@ -78,7 +78,7 @@ class Database
 		}
 
 		try {
-			$stmt = $this->db_link->query("SELECT 1");
+			$this->db_link->query("SELECT 1");
 			return true;
 		}
 		catch(\PDOException $e) {
