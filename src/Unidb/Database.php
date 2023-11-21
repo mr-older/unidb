@@ -78,7 +78,7 @@ class Database
 		}
 
 		try {
-			$this->db_link->query("SELECT 1");
+			$stmt = $this->db_link->query("SELECT 1");
 			return true;
 		}
 		catch(\PDOException $e) {
@@ -95,11 +95,7 @@ class Database
 		$prefix = __FUNCTION__.": $query, ";
 
 		if(empty($this->db_link)) {
-			$this->error = "$prefix Bad or no PDO object given";
-			return false;
-		}
-
-		if(empty($this->status) && $this->connect() == false) {
+			$this->error = "$prefix bad or no PDO object given";
 			return false;
 		}
 
@@ -117,20 +113,20 @@ class Database
 		if(!empty($paramsValues[0])) {
 			foreach($paramsValues as $key => $value) {
 				if($params_number == 0) {
-					$types = str_split($paramsValues[$key]);
+					$types = str_split($value);	//str_split($paramsValues[$key]);
 					$params_number++;
 					continue;
 				}
 
 				if(empty($types)) {
-					$this->error = "$prefix No data types in request";
+					$this->error = "$prefix no data types in request";
 					return false;
 				}
 
 				$prefix.= " $key=>{$value} ";
 
 				if(empty($types[$params_number - 1])) {
-					$this->error = "$prefix Not enough data types for values";
+					$this->error = "$prefix not enough data types for values";
 					return false;
 				}
 
@@ -156,7 +152,7 @@ class Database
 			$stmt->execute();
 		}
 		catch(\PDOException $e) {
-			$this->error = "$prefix Request to DB failed on `execute`: ".$e->getMessage();
+			$this->error = "$prefix request to DB failed on `execute`: ".$e->getMessage();
 			return false;
 		}
 
